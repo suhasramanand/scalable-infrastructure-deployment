@@ -1,0 +1,95 @@
+# Default values for scalable-app
+replicaCount: 1
+
+image:
+  repository: scalable-app
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  hosts:
+    - host: app.scalable-app.com
+      paths:
+        - path: /
+          pathType: Prefix
+    - host: api.scalable-app.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: scalable-app-tls
+  #    hosts:
+  #      - app.scalable-app.com
+  #      - api.scalable-app.com
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# Database configuration
+database:
+  host: ""
+  port: 5432
+  name: "scalableapp"
+  username: "admin"
+  password: ""
+
+# Redis configuration
+redis:
+  host: "redis-service"
+  port: 6379
+  password: ""
+
+# Environment variables
+env:
+  NODE_ENV: "production"
+  LOG_LEVEL: "info"

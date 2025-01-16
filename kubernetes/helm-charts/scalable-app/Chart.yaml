@@ -1,0 +1,16 @@
+apiVersion: v2
+name: scalable-app
+description: A Helm chart for scalable microservices application
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - microservices
+  - kubernetes
+  - scalable
+home: https://github.com/suhasramanand/scalable-infrastructure-deployment
+sources:
+  - https://github.com/suhasramanand/scalable-infrastructure-deployment
+maintainers:
+  - name: suhasramanand
+    email: suhasreddy024@gmail.com
