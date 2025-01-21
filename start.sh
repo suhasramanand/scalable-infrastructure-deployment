@@ -38,11 +38,11 @@ print_status "Docker and Docker Compose are available ✓"
 
 # Stop any existing containers
 print_info "Stopping any existing containers..."
-docker-compose down --remove-orphans 2>/dev/null || true
+docker compose down --remove-orphans 2>/dev/null || true
 
 # Build and start all services
 print_status "Building and starting all services..."
-docker-compose up --build -d
+docker compose up --build -d
 
 # Wait for services to be healthy
 print_info "Waiting for services to be healthy..."
@@ -54,7 +54,7 @@ print_status "Checking service health..."
 services=("postgres" "redis" "backend" "api-gateway" "frontend" "prometheus" "grafana")
 
 for service in "${services[@]}"; do
-    if docker-compose ps "$service" | grep -q "Up"; then
+    if docker compose ps "$service" | grep -q "Up"; then
         print_status "$service is running ✓"
     else
         print_warning "$service is not running ✗"
@@ -74,8 +74,8 @@ echo "  🐘 PostgreSQL:      localhost:5432"
 echo "  🔴 Redis:           localhost:6379"
 echo ""
 echo "📋 Useful commands:"
-echo "  docker-compose logs -f [service]  # View logs"
-echo "  docker-compose ps                 # Check status"
-echo "  docker-compose down               # Stop all services"
-echo "  docker-compose restart [service]  # Restart a service"
+echo "  docker compose logs -f [service]  # View logs"
+echo "  docker compose ps                 # Check status"
+echo "  docker compose down               # Stop all services"
+echo "  docker compose restart [service]  # Restart a service"
 echo ""

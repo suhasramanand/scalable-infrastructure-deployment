@@ -31,17 +31,17 @@ jobs:
 
     - name: Build all services
       run: |
-        docker-compose build
+        docker compose build
 
     - name: Start services
       run: |
-        docker-compose up -d
+        docker compose up -d
         sleep 30
 
     - name: Check service health
       run: |
         # Check if all services are running
-        docker-compose ps
+        docker compose ps
         
         # Check backend health
         curl -f http://localhost:3000/health || exit 1
@@ -60,7 +60,7 @@ jobs:
         curl -f http://localhost:8080/api/dashboard/stats || echo "Dashboard API not ready"
         
         # Test database connection (via backend)
-        docker-compose exec -T backend node -e "
+        docker compose exec -T backend node -e "
           const db = require('./dist/config/database');
           db.raw('SELECT 1').then(() => {
             console.log('✅ Database connection successful');
@@ -74,7 +74,7 @@ jobs:
     - name: Stop services
       if: always()
       run: |
-        docker-compose down --remove-orphans
+        docker compose down --remove-orphans
 
     - name: Build and push images (on main branch)
       if: github.ref == 'refs/heads/main'

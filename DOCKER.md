@@ -23,13 +23,13 @@ Or manually:
 
 ```bash
 # Build and start all services
-docker-compose up --build -d
+docker compose up --build -d
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 
 # Stop all services
-docker-compose down
+docker compose down
 ```
 
 ## Services
@@ -59,39 +59,39 @@ docker-compose down
 ### Viewing Logs
 ```bash
 # All services
-docker-compose logs -f
+docker compose logs -f
 
 # Specific service
-docker-compose logs -f backend
-docker-compose logs -f frontend
-docker-compose logs -f api-gateway
+docker compose logs -f backend
+docker compose logs -f frontend
+docker compose logs -f api-gateway
 ```
 
 ### Restarting Services
 ```bash
 # Restart all services
-docker-compose restart
+docker compose restart
 
 # Restart specific service
-docker-compose restart backend
+docker compose restart backend
 ```
 
 ### Rebuilding Services
 ```bash
 # Rebuild and restart all services
-docker-compose up --build -d
+docker compose up --build -d
 
 # Rebuild specific service
-docker-compose up --build -d backend
+docker compose up --build -d backend
 ```
 
 ### Database Access
 ```bash
 # Connect to PostgreSQL
-docker-compose exec postgres psql -U admin -d scalableapp
+docker compose exec postgres psql -U admin -d scalableapp
 
 # Connect to Redis
-docker-compose exec redis redis-cli -a password123
+docker compose exec redis redis-cli -a password123
 ```
 
 ### Monitoring
@@ -149,19 +149,19 @@ REACT_APP_API_URL: http://localhost:8080
 ### Reset Everything
 ```bash
 # Stop and remove all containers, networks, and volumes
-docker-compose down --volumes --remove-orphans
+docker compose down --volumes --remove-orphans
 
 # Remove all images (optional)
-docker-compose down --rmi all
+docker compose down --rmi all
 
 # Start fresh
-docker-compose up --build -d
+docker compose up --build -d
 ```
 
 ### Health Checks
 All services include health checks. Check status:
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 Services should show "healthy" status when ready.
