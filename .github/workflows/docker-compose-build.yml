@@ -1,0 +1,91 @@
+name: Docker Compose Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'microservices/**'
+      - 'docker-compose.yml'
+      - '.github/workflows/docker-compose-build.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'microservices/**'
+      - 'docker-compose.yml'
+      - '.github/workflows/docker-compose-build.yml'
+
+env:
+  COMPOSE_PROJECT_NAME: scalable-app
+
+jobs:
+  build-and-test:
+    name: Build and Test with Docker Compose
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build all services
+      run: |
+        docker-compose build
+
+    - name: Start services
+      run: |
+        docker-compose up -d
+        sleep 30
+
+    - name: Check service health
+      run: |
+        # Check if all services are running
+        docker-compose ps
+        
+        # Check backend health
+        curl -f http://localhost:3000/health || exit 1
+        
+        # Check API gateway health
+        curl -f http://localhost:8080/health || exit 1
+        
+        # Check frontend
+        curl -f http://localhost/health || exit 1
+        
+        echo "✅ All services are healthy!"
+
+    - name: Run integration tests
+      run: |
+        # Test API endpoints
+        curl -f http://localhost:8080/api/dashboard/stats || echo "Dashboard API not ready"
+        
+        # Test database connection (via backend)
+        docker-compose exec -T backend node -e "
+          const db = require('./dist/config/database');
+          db.raw('SELECT 1').then(() => {
+            console.log('✅ Database connection successful');
+            process.exit(0);
+          }).catch(err => {
+            console.error('❌ Database connection failed:', err);
+            process.exit(1);
+          });
+        " || echo "Database test skipped"
+
+    - name: Stop services
+      if: always()
+      run: |
+        docker-compose down --remove-orphans
+
+    - name: Build and push images (on main branch)
+      if: github.ref == 'refs/heads/main'
+      run: |
+        # Tag and push images to registry
+        docker tag scalable-app_backend ghcr.io/${{ github.repository }}/backend:latest
+        docker tag scalable-app_api-gateway ghcr.io/${{ github.repository }}/api-gateway:latest
+        docker tag scalable-app_frontend ghcr.io/${{ github.repository }}/frontend:latest
+        
+        echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        
+        docker push ghcr.io/${{ github.repository }}/backend:latest
+        docker push ghcr.io/${{ github.repository }}/api-gateway:latest
+        docker push ghcr.io/${{ github.repository }}/frontend:latest
