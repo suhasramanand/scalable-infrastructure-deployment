@@ -50,7 +50,7 @@ router.post('/login', async (req, res, next) => {
     );
     
     logger.info(`User ${email} logged in successfully`);
-    res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
+    return res.json({ token, user: { id: user.id, email: user.email, name: user.name } });
   } catch (error) {
     logger.error('Error during login:', error);
     next(error);

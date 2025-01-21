@@ -10,7 +10,7 @@ import { createConnection } from './config/database';
 import { redisClient } from './config/redis';
 import { logger } from './utils/logger';
 import { errorHandler } from './middleware/errorHandler';
-import { rateLimiter } from './middleware/rateLimiter';
+import { rateLimiterMiddleware } from './middleware/rateLimiter';
 import userRoutes from './routes/users';
 import authRoutes from './routes/auth';
 import dashboardRoutes from './routes/dashboard';
@@ -50,7 +50,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Rate limiting
-app.use(rateLimiter);
+app.use(rateLimiterMiddleware);
 
 // API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -68,7 +68,8 @@ app.get('/health', (req, res) => {
 app.get('/ready', async (req, res) => {
   try {
     // Check database connection
-    await createConnection().raw('SELECT 1');
+    const db = await createConnection();
+    await db.raw('SELECT 1');
     
     // Check Redis connection
     await redisClient.ping();

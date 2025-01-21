@@ -62,7 +62,7 @@ router.get('/:id', async (req, res, next) => {
     }
     
     logger.info(`Retrieved user with ID: ${id}`);
-    res.json({ user });
+    return res.json({ user });
   } catch (error) {
     logger.error('Error fetching user:', error);
     next(error);

@@ -35,7 +35,7 @@ router.get('/stats', async (req, res, next) => {
     const totalUsers = parseInt(totalUsersResult?.count as string) || 0;
     
     // Get active sessions from Redis
-    const activeSessions = await redisClient.scard('active_sessions') || 0;
+    const activeSessions = await redisClient.sCard('active_sessions') || 0;
     
     // Get API requests in last 24 hours
     const apiRequests24h = await redisClient.get('api_requests_24h') || '0';
