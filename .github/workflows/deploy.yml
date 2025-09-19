@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ main ]
 
-env:
-  NODE_VERSION: '18'
-
 jobs:
   build-and-test:
     name: Build and Test Services
@@ -25,12 +22,11 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
+        node-version: '18'
 
     - name: Install dependencies
       working-directory: ./microservices/${{ matrix.service }}
-      run: npm ci
+      run: npm install
 
     - name: Run linting
       working-directory: ./microservices/${{ matrix.service }}
