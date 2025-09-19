@@ -1,4 +1,4 @@
-version: '3.8'
+# Docker Compose configuration for scalable microservices
 
 services:
   # PostgreSQL Database
@@ -38,7 +38,7 @@ services:
   backend:
     build:
       context: ./microservices/backend
-      dockerfile: Dockerfile.simple
+      dockerfile: Dockerfile
     container_name: scalable-app-backend
     environment:
       NODE_ENV: production
@@ -66,7 +66,7 @@ services:
   api-gateway:
     build:
       context: ./microservices/api-gateway
-      dockerfile: Dockerfile.simple
+      dockerfile: Dockerfile
     container_name: scalable-app-api-gateway
     environment:
       NODE_ENV: production
@@ -90,7 +90,7 @@ services:
   frontend:
     build:
       context: ./microservices/frontend
-      dockerfile: Dockerfile.simple
+      dockerfile: Dockerfile
     container_name: scalable-app-frontend
     environment:
       REACT_APP_API_URL: http://localhost:8080
@@ -100,7 +100,7 @@ services:
       api-gateway:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
       interval: 30s
       timeout: 10s
       retries: 3

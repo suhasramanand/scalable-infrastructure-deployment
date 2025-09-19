@@ -1,37 +1,47 @@
 # Scalable Infrastructure Deployment
 
-A comprehensive, production-ready infrastructure deployment solution using Terraform, Kubernetes (AWS EKS), and CI/CD pipelines for scalable microservices architecture.
+A microservices application with React frontend, Node.js backend, API Gateway, and infrastructure automation using Docker, Kubernetes, and Terraform.
 
-## 🏗️ Architecture Overview
+## Architecture
 
-This project provides a complete infrastructure-as-code solution for deploying scalable microservices on AWS using:
+This project contains:
+- **React Frontend** - Modern React application with Material-UI components
+- **Node.js Backend** - Express.js API with TypeScript, PostgreSQL, and Redis
+- **API Gateway** - Express.js service with authentication and rate limiting
+- **Docker** - Multi-stage builds for all services
+- **Kubernetes** - Deployment manifests and Helm charts
+- **Terraform** - AWS infrastructure provisioning
+- **CI/CD** - GitHub Actions workflow for automated deployment
 
-- **Terraform** for infrastructure provisioning
-- **AWS EKS** for Kubernetes cluster management
-- **GitHub Actions** for CI/CD automation
-- **Microservices architecture** with React frontend, Node.js backend, and API Gateway
-- **Monitoring and observability** with Prometheus, Grafana, and ELK stack
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 scalable-infrastructure-deployment/
-├── terraform/                    # Infrastructure as Code
-│   ├── main.tf                   # Main Terraform configuration
-│   ├── variables.tf              # Variable definitions
-│   ├── outputs.tf                # Output definitions
-│   ├── modules/                  # Reusable Terraform modules
-│   │   ├── vpc/                  # VPC module
-│   │   ├── eks/                  # EKS module
-│   │   ├── rds/                  # RDS module
-│   │   └── iam/                  # IAM module
-│   └── environments/             # Environment-specific configurations
-│       ├── dev/
-│       ├── staging/
-│       └── prod/
+├── microservices/                # Application code
+│   ├── frontend/                 # React frontend with Material-UI
+│   │   ├── src/
+│   │   │   ├── App.js           # Main application component
+│   │   │   ├── components/      # React components (Dashboard, UserManagement, Analytics)
+│   │   │   └── hooks/           # Custom hooks (useApi)
+│   │   ├── package.json
+│   │   └── Dockerfile
+│   ├── backend/                  # Node.js backend with TypeScript
+│   │   ├── src/
+│   │   │   ├── routes/          # API routes (auth, users, dashboard)
+│   │   │   ├── middleware/      # Express middleware
+│   │   │   ├── config/          # Database and Redis configuration
+│   │   │   └── utils/           # Logging utilities
+│   │   ├── package.json
+│   │   └── Dockerfile
+│   └── api-gateway/              # API Gateway service
+│       ├── src/
+│       │   ├── middleware/      # Authentication and rate limiting
+│       │   ├── config/          # Redis configuration
+│       │   └── utils/           # Logging utilities
+│       ├── package.json
+│       └── Dockerfile
 ├── kubernetes/                   # Kubernetes manifests
-│   ├── namespaces.yaml           # Namespace definitions
-│   ├── manifests/                # Application manifests
+│   ├── manifests/               # Deployment YAML files
 │   │   ├── frontend-deployment.yaml
 │   │   ├── backend-deployment.yaml
 │   │   ├── api-gateway-deployment.yaml
@@ -40,217 +50,155 @@ scalable-infrastructure-deployment/
 │   │   ├── hpa.yaml
 │   │   ├── network-policies.yaml
 │   │   └── secrets.yaml
-│   └── helm-charts/              # Helm charts
-│       └── scalable-app/
-├── microservices/                # Application code
-│   ├── frontend/                 # React frontend
-│   ├── backend/                  # Node.js backend
-│   └── api-gateway/              # API Gateway service
-├── .github/workflows/            # CI/CD pipelines
-│   ├── terraform-plan.yml
-│   ├── terraform-apply.yml
-│   ├── docker-build.yml
-│   ├── k8s-deploy.yml
-│   └── monitoring.yml
-└── docs/                         # Documentation
+│   ├── helm-charts/             # Helm chart for the application
+│   │   └── scalable-app/
+│   └── namespaces.yaml
+├── terraform/                    # Infrastructure as Code
+│   ├── main.tf                  # Main Terraform configuration
+│   ├── variables.tf             # Variable definitions
+│   ├── outputs.tf               # Output definitions
+│   ├── modules/                 # Terraform modules
+│   │   ├── vpc/                 # VPC configuration
+│   │   ├── eks/                 # EKS cluster
+│   │   ├── rds/                 # PostgreSQL database
+│   │   └── iam/                 # IAM roles and policies
+│   └── environments/            # Environment-specific variables
+│       ├── dev/
+│       ├── staging/
+│       └── prod/
+├── .github/workflows/           # CI/CD pipeline
+│   └── deploy.yml              # Single comprehensive deployment workflow
+├── docker-compose.yml          # Local development setup
+├── monitoring/                 # Monitoring configuration
+│   └── prometheus.yml
+└── scripts/                    # Utility scripts
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
-- AWS CLI configured with appropriate permissions
-- Terraform >= 1.0
-- kubectl
-- Helm
-- Docker
-- Node.js (for local development)
+- Docker and Docker Compose
+- Node.js 18+
+- AWS CLI (for infrastructure deployment)
+- Terraform (for infrastructure deployment)
+- kubectl (for Kubernetes deployment)
 
-### 1. Infrastructure Deployment
+### Local Development
 
-```bash
-# Navigate to terraform directory
-cd terraform
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd scalable-infrastructure-deployment
+   ```
 
-# Initialize Terraform
-terraform init
+2. **Start all services locally**
+   ```bash
+   docker-compose up --build
+   ```
 
-# Plan infrastructure changes
-terraform plan -var-file="environments/dev/terraform.tfvars"
+3. **Access the application**
+   - Frontend: http://localhost:80
+   - API Gateway: http://localhost:8080
+   - Backend: http://localhost:3000
+   - Prometheus: http://localhost:9090
+   - Grafana: http://localhost:3001
 
-# Apply infrastructure
-terraform apply -var-file="environments/dev/terraform.tfvars"
-```
-
-### 2. Kubernetes Deployment
-
-```bash
-# Update kubeconfig
-aws eks update-kubeconfig --region us-west-2 --name scalable-infra-dev
-
-# Deploy Kubernetes manifests
-kubectl apply -f kubernetes/namespaces.yaml
-kubectl apply -f kubernetes/manifests/
-
-# Verify deployment
-kubectl get pods -n scalable-app
-```
-
-### 3. Using Helm Charts
+### Building Individual Services
 
 ```bash
-# Install the application using Helm
-helm install scalable-app kubernetes/helm-charts/scalable-app \
-  --namespace scalable-app \
-  --create-namespace
+# Build backend service
+cd microservices/backend
+npm install
+npm run build
+npm start
+
+# Build API Gateway
+cd microservices/api-gateway
+npm install
+npm run build
+npm start
+
+# Build frontend
+cd microservices/frontend
+npm install
+npm run build
+npm start
 ```
 
-## 🔧 Configuration
+## Infrastructure Deployment
 
-### Environment Variables
+### Using Terraform
 
-The application supports multiple environments (dev, staging, prod) with environment-specific configurations:
+1. **Configure AWS credentials**
+   ```bash
+   aws configure
+   ```
 
-- **AWS Region**: Configured per environment
-- **Database**: PostgreSQL with connection pooling
-- **Cache**: Redis for session management and caching
-- **Scaling**: Auto-scaling based on CPU and memory metrics
+2. **Deploy infrastructure**
+   ```bash
+   cd terraform
+   terraform init
+   terraform plan -var-file="environments/dev/terraform.tfvars"
+   terraform apply -var-file="environments/dev/terraform.tfvars"
+   ```
 
-### Secrets Management
+### Using Kubernetes
 
-Sensitive data is managed through Kubernetes secrets:
+1. **Deploy to Kubernetes**
+   ```bash
+   kubectl apply -f kubernetes/namespaces.yaml
+   kubectl apply -f kubernetes/manifests/
+   ```
 
-```bash
-# Create database credentials secret
-kubectl create secret generic database-credentials \
-  --from-literal=host=your-db-host \
-  --from-literal=username=your-username \
-  --from-literal=password=your-password \
-  --namespace scalable-app
-```
+2. **Using Helm**
+   ```bash
+   helm install scalable-app kubernetes/helm-charts/scalable-app \
+     --namespace scalable-app \
+     --create-namespace
+   ```
 
-## 📊 Monitoring and Observability
+## CI/CD Pipeline
 
-The infrastructure includes comprehensive monitoring:
+The GitHub Actions workflow (`.github/workflows/deploy.yml`) provides:
 
-- **Prometheus** for metrics collection
-- **Grafana** for visualization
-- **Jaeger** for distributed tracing
-- **ELK Stack** for log aggregation
-- **Health checks** and readiness probes
+1. **Build and Test** - Linting, building, and testing all services
+2. **Security Scan** - Vulnerability scanning with Trivy
+3. **Docker Build** - Building and pushing Docker images
+4. **Infrastructure** - Terraform deployment
+5. **Application Deployment** - Kubernetes deployment with Helm
 
-### Accessing Monitoring Dashboards
+## Services
 
-```bash
-# Port forward to access Grafana
-kubectl port-forward svc/prometheus-grafana 3000:80 -n monitoring
+### Frontend
+- **Technology**: React 18 with Material-UI
+- **Features**: Dashboard, User Management, Analytics
+- **Port**: 80 (nginx)
 
-# Access Grafana at http://localhost:3000
-# Default credentials: admin / (check secrets)
-```
+### Backend
+- **Technology**: Node.js with Express and TypeScript
+- **Features**: User authentication, CRUD operations, PostgreSQL integration
+- **Port**: 3000
 
-## 🔄 CI/CD Pipeline
+### API Gateway
+- **Technology**: Node.js with Express and TypeScript
+- **Features**: Request routing, authentication, rate limiting, Redis caching
+- **Port**: 8080
 
-The GitHub Actions workflows provide:
+### Database
+- **PostgreSQL**: Primary database
+- **Redis**: Caching and session storage
 
-1. **Infrastructure Validation**: Terraform plan and validation
-2. **Application Building**: Docker image builds with security scanning
-3. **Deployment**: Automated Kubernetes deployments
-4. **Monitoring Setup**: Observability stack deployment
-5. **Security**: Vulnerability scanning with Trivy
+## Monitoring
 
-### Pipeline Triggers
+- **Prometheus**: Metrics collection
+- **Grafana**: Visualization dashboards
+- **Health Checks**: Built-in health endpoints for all services
 
-- **Pull Requests**: Terraform plan and application builds
-- **Main Branch**: Full deployment to production
-- **Manual**: Environment-specific deployments
+## Technologies Used
 
-## 🛡️ Security Features
-
-- **Network Policies**: Pod-to-pod communication restrictions
-- **Security Groups**: VPC-level network isolation
-- **IAM Roles**: Least privilege access patterns
-- **Secrets Management**: Encrypted secrets storage
-- **Container Security**: Non-root user containers
-- **Rate Limiting**: API request throttling
-
-## 📈 Scaling and Performance
-
-### Horizontal Pod Autoscaling
-
-```yaml
-# Example HPA configuration
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: backend-hpa
-spec:
-  minReplicas: 3
-  maxReplicas: 20
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        averageUtilization: 70
-```
-
-### Cluster Autoscaling
-
-The EKS cluster automatically scales nodes based on demand:
-
-- **Minimum Nodes**: 1 (dev), 2 (staging), 3 (prod)
-- **Maximum Nodes**: 5 (dev), 10 (staging), 20 (prod)
-- **Instance Types**: t3.medium, t3.large, t3.xlarge
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-1. **Terraform State Lock**: Check S3 backend configuration
-2. **Kubernetes Resources**: Verify resource limits and requests
-3. **Database Connections**: Check security groups and credentials
-4. **Image Pull Errors**: Verify container registry access
-
-### Debug Commands
-
-```bash
-# Check pod logs
-kubectl logs -f deployment/backend-service -n scalable-app
-
-# Describe resources
-kubectl describe pod <pod-name> -n scalable-app
-
-# Check events
-kubectl get events -n scalable-app --sort-by=.metadata.creationTimestamp
-```
-
-## 📚 Additional Resources
-
-- [Terraform AWS Provider Documentation](https://registry.terraform.io/providers/hashicorp/aws/latest/docs)
-- [EKS User Guide](https://docs.aws.amazon.com/eks/latest/userguide/)
-- [Kubernetes Documentation](https://kubernetes.io/docs/)
-- [Helm Documentation](https://helm.sh/docs/)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and validation
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👥 Authors
-
-- **suhasramanand** - *Initial work* - [GitHub](https://github.com/suhasramanand)
-
-## 🙏 Acknowledgments
-
-- AWS for providing the cloud infrastructure
-- Kubernetes community for the orchestration platform
-- Terraform for infrastructure as code capabilities
-- All open-source contributors who made this possible
+- **Frontend**: React, Material-UI, React Router, React Query
+- **Backend**: Node.js, Express, TypeScript, PostgreSQL, Redis
+- **Infrastructure**: Docker, Kubernetes, Terraform, AWS
+- **CI/CD**: GitHub Actions
+- **Monitoring**: Prometheus, Grafana

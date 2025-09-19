@@ -17,9 +17,9 @@ export const rateLimiterMiddleware = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    await rateLimiter.consume(req.ip);
+    await rateLimiter.consume(req.ip || 'unknown');
     next();
-  } catch (rejRes) {
+  } catch (rejRes: any) {
     logger.warn(`Rate limit exceeded for IP: ${req.ip}`);
     res.status(429).json({
       error: 'Too Many Requests',

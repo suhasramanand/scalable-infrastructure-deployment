@@ -9,7 +9,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import { logger } from './utils/logger';
 import { errorHandler } from './middleware/errorHandler';
-import { rateLimiter } from './middleware/rateLimiter';
+import { rateLimiterMiddleware } from './middleware/rateLimiter';
 import { authMiddleware } from './middleware/auth';
 import { redisClient } from './config/redis';
 
@@ -48,7 +48,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Rate limiting
-app.use(rateLimiter);
+app.use(rateLimiterMiddleware);
 
 // API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

@@ -7,14 +7,7 @@ import {
   Typography,
   CircularProgress,
   Alert,
-  Box,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer
+  Box
 } from '@mui/material';
 import { useApi } from '../hooks/useApi';
 
@@ -58,16 +51,10 @@ const Analytics = () => {
               <Typography variant="h6" gutterBottom>
                 API Requests Over Time
               </Typography>
-              <Box height={300}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={analytics?.data?.requests || []}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="count" stroke="#8884d8" />
-                  </LineChart>
-                </ResponsiveContainer>
+              <Box height={300} display="flex" alignItems="center" justifyContent="center">
+                <Typography variant="body1" color="text.secondary">
+                  Chart visualization would be implemented with a charting library like Chart.js or Recharts
+                </Typography>
               </Box>
             </CardContent>
           </Card>

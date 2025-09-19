@@ -5,7 +5,7 @@ import { logger } from '../utils/logger';
 
 const rateLimiter = new RateLimiterRedis({
   storeClient: redisClient,
-  keyPrefix: 'middleware',
+  keyPrefix: 'scalable-app-backend',
   points: 100, // Number of requests
   duration: 60, // Per 60 seconds
   blockDuration: 60, // Block for 60 seconds

@@ -27,10 +27,10 @@ router.get('/', async (req, res, next) => {
   try {
     const users = await db('users').select('*');
     logger.info(`Retrieved ${users.length} users`);
-    res.json({ users });
+    return res.json({ users });
   } catch (error) {
     logger.error('Error fetching users:', error);
-    next(error);
+    return next(error);
   }
 });
 
@@ -65,7 +65,7 @@ router.get('/:id', async (req, res, next) => {
     return res.json({ user });
   } catch (error) {
     logger.error('Error fetching user:', error);
-    next(error);
+    return next(error);
   }
 });
 

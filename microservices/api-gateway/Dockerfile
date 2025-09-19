@@ -1,4 +1,4 @@
-# API Gateway Dockerfile
+# API Gateway service Dockerfile
 FROM node:18-alpine AS builder
 
 WORKDIR /app
@@ -6,8 +6,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies (including dev dependencies for build)
-RUN npm install
+# Install all dependencies (including dev dependencies for build)
+RUN npm ci --silent && npm cache clean --force
 
 # Copy source code
 COPY . .
@@ -16,21 +16,24 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM node:18-alpine
+FROM node:18-alpine AS production
 
-# Create app directory
 WORKDIR /app
+
+# Install only production dependencies
+COPY package*.json ./
+RUN npm ci --only=production --silent && npm cache clean --force
+
+# Copy built application from builder stage
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/healthcheck.js ./
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
-# Copy built application
-COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
-COPY --from=builder --chown=nodejs:nodejs /app/package*.json ./
-
-# Install only production dependencies
-RUN npm install --omit=dev && npm cache clean --force
+# Change ownership
+RUN chown -R nodejs:nodejs /app
 
 # Switch to non-root user
 USER nodejs
